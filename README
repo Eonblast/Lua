@@ -1,4 +1,4 @@
-
+﻿
 This is Lua 5.2 (alpha), released on 23 Nov 2010
 with a hack for true count of table and string sizes.
 as of 06 Jan 2011.
@@ -47,3 +47,332 @@ https://github.com/Eonblast/Lua/compare/master...Lua_5.2.2.0_alpha_original
 Contact:
 
 hd2010@eonblast.com
+
+
+
+Samples:
+
+See test/len.lua and test/strlen.lua
+
+All these samples work fine.
+
+
+
+-- # # # # # # # # # # # # # # # # # # # # # # # # #
+   Sparce amd Complete Lists 
+-- # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+t = {  }
+assert(t, 0)
+
+t = {  nil, nil }
+assert(t, 0)
+
+t = {  nil, nil, nil }
+assert(t, 0)
+
+t = {  nil, 'foo', nil }
+assert(t, 1)
+
+t = { 'foo' }
+assert(t, 1)
+
+t = {  nil, 'foo' }
+assert(t, 1)
+
+t = {  'foo', nil }
+assert(t, 1)
+
+t = {  nil, 'foo', nil }
+assert(t, 1)
+
+t = {  nil, nil, 'foo' }
+assert(t, 1)
+
+t = {  'foo', nil, nil }
+assert(t, 1)
+
+t = {  nil, nil, 'foo', nil , nil }
+assert(t, 1)
+
+t = { 'foo', 'too', nil }
+assert(t, 2)
+
+t = { 'foo', 'too', nil, nil }
+assert(t, 2)
+
+t = { 'foo', 'too', 'bar' }
+assert(t, 3)
+
+t = { nil, 'too', 'bar' }
+assert(t, 2)
+
+t = { nil, nil, 'too', 'bar' }
+assert(t, 2)
+
+t = { nil, nil, 'too', 'bar', nil, nil }
+assert(t, 2)
+
+t = { nil, 'too', nil, 'bar' }
+assert(t, 2)
+
+t = { nil, nil, 'too', nil, 'bar' }
+assert(t, 2)
+
+t = { nil, nil, 'too', nil, 'bar', nil, nil }
+assert(t, 2)
+
+t = { nil, 'too', nil, nil, 'bar' }
+assert(t, 2)
+
+t = { nil, nil, 'too', nil, nil, 'bar' }
+assert(t, 2)
+
+t = { nil, nil, 'too', nil, nil, 'bar', nil, nil }
+assert(t, 2)
+
+t = { 'foo', nil, 'bar' }
+assert(t, 2)
+
+t = { 'foo', nil, nil, 'bar' }
+assert(t, 2)
+
+t = { 'foo', 'too', 'bar' }
+assert(t, 3)
+
+t = { 'foo', 'too', 'bar', nil }
+assert(t, 3)
+
+t = { 'foo', 'too', 'bar', nil, nil }
+assert(t, 3)
+
+t = { 'foo', 'too', 'bar', nil, nil, nil }
+assert(t, 3)
+
+t = { nil, 'foo', 'too', 'bar' }
+assert(t, 3)
+
+t = { nil, nil, 'foo', 'too', 'bar' }
+assert(t, 3)
+
+t = { nil, nil, nil, 'foo', 'too', 'bar' }
+assert(t, 3)
+
+t = { nil, 'foo', nil, 'too', 'bar' }
+assert(t, 3)
+
+t = { nil, nil, 'foo', nil, 'too', 'bar' }
+assert(t, 3)
+
+t = { nil, nil, nil, 'foo', nil, 'too', 'bar' }
+assert(t, 3)
+
+-- # # # # # # # # # # # # # # # # # # # # # # # # #
+
+t = {}
+t[1] = 'foo'
+t[2] = nil
+t[3] = 'bar'
+assert(t, 2)
+
+
+t = {}
+t[1] = 'foo'
+t[2] = 'too'
+t[3] = 'bar'
+assert(t, 3)
+
+
+t = {}
+t[1] = nil
+t[2] = nil
+t[3] = 'bar'
+assert(t, 1)
+
+
+t = {}
+t[1] = 'foo'
+t[2] = nil
+t[3] = nil
+assert(t, 1)
+
+
+t = {}
+t[1] = nil
+t[2] = 'too'
+t[3] = 'bar'
+assert(t, 2)
+
+
+-- # # # # # # # # # # # # # # # # # # # # # # # # #
+
+t = {}
+t[1] = 'foo'
+t[2] = 'too'
+t[3] = 'bar'
+t[1] = nil
+assert(t, 2)
+
+
+t = {}
+t[1] = 'foo'
+t[2] = 'too'
+t[3] = 'bar'
+t[2] = nil
+assert(t, 2)
+
+
+t = {}
+t[1] = 'foo'
+t[2] = 'too'
+t[3] = 'bar'
+t[3] = nil
+assert(t, 2)
+
+
+t = {}
+t[1] = 'foo'
+t[2] = 'too'
+t[3] = 'bar'
+t[4] = nil
+assert(t, 3)
+
+t = {}
+t[1] = 'foo'
+t[2] = 'too'
+t[3] = 'bar'
+t[0] = nil
+assert(t, 3)
+
+-- # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+t = {}
+t[0] = 'foo'
+t[1] = nil
+t[2] = 'bar'
+assert(t, 2)
+
+
+t = {}
+t[0] = 'foo'
+t[1] = 'too'
+t[2] = 'bar'
+assert(t, 3)
+
+
+t = {}
+t[0] = nil
+t[1] = nil
+t[2] = 'bar'
+assert(t, 1)
+
+
+t = {}
+t[0] = 'foo'
+t[1] = nil
+t[2] = nil
+assert(t, 1)
+
+
+t = {}
+t[0] = nil
+t[1] = 'too'
+t[2] = 'bar'
+assert(t, 2)
+
+
+-- # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+t = {}
+t[-1] = 'foo'
+t[0] = nil
+t[2] = 'bar'
+assert(t, 2)
+
+
+t = {}
+t[-1] = 'foo'
+t[0] = 'too'
+t[1] = 'bar'
+assert(t, 3)
+
+
+t = {}
+t[-1] = nil
+t[0] = nil
+t[1] = 'bar'
+assert(t, 1)
+
+
+t = {}
+t[-1] = 'foo'
+t[0] = nil
+t[1] = nil
+assert(t, 1)
+
+
+t = {}
+t[-1] = nil
+t[0] = 'too'
+t[1] = 'bar'
+assert(t, 2)
+
+
+-- # # # # # # # # # # # # # # # # # # # # # # # # #
+
+t = {}
+t[0] = 'foo'
+t[1] = 'too'
+t[2] = 'bar'
+t[0] = nil
+assert(t, 2)
+
+
+t = {}
+t[0] = 'foo'
+t[1] = 'too'
+t[2] = 'bar'
+t[1] = nil
+assert(t, 2)
+
+
+t = {}
+t[0] = 'foo'
+t[1] = 'too'
+t[2] = 'bar'
+t[2] = nil
+assert(t, 2)
+
+
+t = {}
+t[0] = 'foo'
+t[1] = 'too'
+t[2] = 'bar'
+t[3] = nil
+assert(t, 3)
+
+t = {}
+t[0] = 'foo'
+t[1] = 'too'
+t[2] = 'bar'
+t[-1] = nil
+assert(t, 3)
+
+
+-- # # # # # # # # # # # # # # # # # # # # # # # # #
+   UTF-8 String Test Samples
+-- # # # # # # # # # # # # # # # # # # # # # # # # #
+
+assert("", 0)
+assert(" ", 1)
+assert("Q", 1)
+assert("Room", 4)
+assert("Tür", 3)
+assert("Dûnedaín", 8)
+assert("Stößel", 6)
+assert("Fu∂ark", 6)
+assert("«∑€®†Ω", 6)
+assert("黃耀賢 (Yau-Hsien Huang)", 21)
