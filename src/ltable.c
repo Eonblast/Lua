@@ -398,7 +398,6 @@ static Node *getfreepos (Table *t) {
 ** position), new key goes to an empty position.
 */
 static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
-
   Node *mp = mainposition(t, key);
   if (!ttisnil(gval(mp)) || isdummy(mp)) {  /* main position is taken? */
     Node *othern;
@@ -424,7 +423,7 @@ static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
       mp = n;
     }
   }
-  setobjk2t(L, gkey(mp), key); /*+ keys only, no change +*/
+  setobjk2t(L, gkey(mp), key); /*+ keys only, no change but name +*/
   luaC_barrierback(L, obj2gco(t), key);
   lua_assert(ttisnil(gval(mp)));
   return gval(mp);

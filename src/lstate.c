@@ -133,10 +133,10 @@ static void init_registry (lua_State *L, global_State *g) {
   luaH_resize(L, registry, LUA_RIDX_LAST, 0);
   /* registry[LUA_RIDX_MAINTHREAD] = L */
   setthvalue(L, &mt, L);
-  setobj2t(L, registry, luaH_setint(L, registry, LUA_RIDX_MAINTHREAD), &mt); /*+both+*/
+  setobj2t(L, registry, luaH_setint(L, registry, LUA_RIDX_MAINTHREAD), &mt); /*+ get & set +*/
   /* registry[LUA_RIDX_GLOBALS] = table of globals */
   sethvalue(L, &mt, luaH_new(L));
-  setobj2t(L, registry, luaH_setint(L, registry, LUA_RIDX_GLOBALS), &mt); /*+both+*/
+  setobj2t(L, registry, luaH_setint(L, registry, LUA_RIDX_GLOBALS), &mt); /*+ get & set +*/
 }
 
 

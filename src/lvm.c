@@ -98,6 +98,7 @@ static void callTM (lua_State *L, const TValue *f, const TValue *p1,
   }
 }
 
+
 void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
   int loop;
   for (loop = 0; loop < MAXTAGLOOP; loop++) {
@@ -122,6 +123,7 @@ void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
   }
   luaG_runerror(L, "loop in gettable");
 }
+
 
 void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
   int loop;
@@ -151,6 +153,7 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
   }
   luaG_runerror(L, "loop in settable");
 }
+
 
 static int call_binTM (lua_State *L, const TValue *p1, const TValue *p2,
                        StkId res, TMS event) {
@@ -308,7 +311,8 @@ void luaV_objlen (lua_State *L, StkId ra, const TValue *rb) {
     case LUA_TTABLE: {
       Table *h = hvalue(rb);
       tm = fasttm(L, h->metatable, TM_LEN);
-      setnvalue(ra, cast_num(luaH_getn(h)));  /* else primitive len */
+      if (tm) break; /* metamethod? break switch to call it */
+	  setnvalue(ra, cast_num(luaH_getn(h)));  /* else primitive len */
       return;
     }
     case LUA_TSTRING: {
@@ -329,15 +333,15 @@ void luaV_objlen (lua_State *L, StkId ra, const TValue *rb) {
 void luaV_objcount (lua_State *L, StkId ra, const TValue *rb) {
   const TValue *tm;
   switch (ttype(rb)) {
+    /*+ get actual count of elements in table O(1) +*/
     case LUA_TTABLE: {
-    /*+ actual count of elements in table O(1) +*/
       Table *h = hvalue(rb);
       tm = fasttm(L, h->metatable, TM_COUNT);
       if (tm) break;  /* metamethod? break switch to call it */
       setnvalue(ra, cast_num(h->count));  /*+ real element count +*/
       return;
     }
-    /* UTF-8 estimate */
+    /* get UTF-8 estimate (http://lua-users.org/wiki/LuaUnicode) */
     case LUA_TSTRING: {
 	  unsigned char *p = (unsigned char *)getstr(rawtsvalue(rb));
 	  unsigned char *q = p + tsvalue(rb)->len;
