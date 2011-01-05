@@ -145,9 +145,11 @@ typedef struct lua_TValue {
 /*+ set numeric value with live table element counter - used once in lcode.c +*/
 #define setnvaluetbl(T,objT,x) \
 	{ TValue *oT=(objT); Table *tbl = (T); \
-      if(ttisnil(oT)) tbl->count++; \
+      if(ttisnil(oT)) \
+      	if(tbl->count++ == (size_t)-1) \
+		  luaG_runerror(L, "table count overrun"); \
 	  oT->value_.n=(x); oT->tt_=LUA_TNUMBER; \
-	} /*+*/
+	} 
 
 #define setfvalue(obj,x) \
   { TValue *i_o=(obj); i_o->value_.f=(x); i_o->tt_=LUA_TLCF; }
@@ -161,11 +163,13 @@ typedef struct lua_TValue {
   { TValue *i_o=(obj); i_o->value_.b=(x); i_o->tt_=LUA_TBOOLEAN; }
 
 /*+ set bool with live table element counr - used once in ldebug.c +*/
-#define setbvaluetbl(T,objT,x) /*+*/\
-	{ TValue *oT=(objT); Table *tbl = (T); /*+*/\
-      if(ttisnil(oT)) tbl->count++; /*+*/\
-	  oT->value_.b=(x); oT->tt_=LUA_TBOOLEAN; /*+*/\
-	} /*+*/
+#define setbvaluetbl(T,objT,x) \
+	{ TValue *oT=(objT); Table *tbl = (T); \
+      if(ttisnil(oT)) \
+    	if(tbl->count++ == (size_t)-1) \
+		  luaG_runerror(L, "table count overrun"); \
+	  oT->value_.b=(x); oT->tt_=LUA_TBOOLEAN; \
+	} 
 
 #define setsvalue(L,obj,x) \
   { TValue *i_o=(obj); \
@@ -209,13 +213,13 @@ typedef struct lua_TValue {
 /*+ generic table set with live element count +*/
 #define setobjtbl(L,T,objT,objV) \
 	{ const TValue *oV=(objV); TValue *oT=(objT); Table *tbl = (T); \
-	  if(ttisnil(oT) && !ttisnil(oV)) \
-    	tbl->count++; /*+!+*/\
+	  if(ttisnil(oT) && !ttisnil(oV)) { \
+    	if(tbl->count++ == (size_t)-1) \
+		  luaG_runerror(L, "table count overrun"); } \
 	  else if(!ttisnil(oT) && ttisnil(oV)) { \
-    	tbl->count--; /*+!+*/\
+    	tbl->count--; \
 		if(tbl->count < 0) \
-		  luaG_runerror(L, "table count underrun"); \
-	  }\
+		  luaG_runerror(L, "table count underrun"); }\
 	  oT->value_ = oV->value_; oT->tt_=oV->tt_; \
 	  checkliveness(G(L),oT); \
 	} 
@@ -411,7 +415,7 @@ typedef struct Table {
   Node *lastfree;  /* any free position is before this position */
   GCObject *gclist;
   int sizearray;  /* size of `array' array */
-  int count; /*+ element count +*/
+  size_t count; /*+ element count +*/
 } Table;
 
 

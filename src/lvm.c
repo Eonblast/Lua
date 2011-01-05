@@ -346,7 +346,12 @@ void luaV_objcount (lua_State *L, StkId ra, const TValue *rb) {
 	  unsigned char *p = (unsigned char *)getstr(rawtsvalue(rb));
 	  unsigned char *q = p + tsvalue(rb)->len;
 	  size_t count = 0;
-	  while(p < q) { if(*p <= 127 || (*p >= 194 && *p <= 244)) count++; p++; }
+	  while(p < q) {
+	  	if(*p <= 127 || (*p >= 194 && *p <= 244)) /* see link ^ */
+	  	  if(count++ == (size_t)-1)
+		    luaG_runerror(L, "string estimate overrun");
+	  		/* return? */
+	  	p++; }
       setnvalue(ra, cast_num(count));  /*+ utf-8 length estimate +*/
       return;
     }
