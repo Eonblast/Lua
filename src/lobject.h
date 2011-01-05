@@ -142,6 +142,13 @@ typedef struct lua_TValue {
 #define setnvalue(obj,x) \
   { TValue *i_o=(obj); i_o->value_.n=(x); i_o->tt_=LUA_TNUMBER; }
 
+/*+ used once in lcode.c +*/
+#define setnvaluetbl(T,objT,x) /*+*/\
+	{ TValue *oT=(objT); Table *tbl = (T); /*+*/\
+      if(ttisnil(oT)) tbl->count = tbl->count +1; /*+*/\
+	  oT->value_.n=(x); oT->tt_=LUA_TNUMBER; /*+*/\
+	} /*+*/
+
 #define setfvalue(obj,x) \
   { TValue *i_o=(obj); i_o->value_.f=(x); i_o->tt_=LUA_TLCF; }
 
@@ -152,6 +159,13 @@ typedef struct lua_TValue {
 
 #define setbvalue(obj,x) \
   { TValue *i_o=(obj); i_o->value_.b=(x); i_o->tt_=LUA_TBOOLEAN; }
+
+/*+ used once in ldebug.c +*/
+#define setbvaluetbl(T,objT,x) /*+*/\
+	{ TValue *oT=(objT); Table *tbl = (T); /*+*/\
+      if(ttisnil(oT)) tbl->count = tbl->count +1; /*+*/\
+	  oT->value_.b=(x); oT->tt_=LUA_TBOOLEAN; /*+*/\
+	} /*+*/
 
 #define setsvalue(L,obj,x) \
   { TValue *i_o=(obj); \
@@ -193,6 +207,21 @@ typedef struct lua_TValue {
 	  checkliveness(G(L),o1); }
 
 
+#define setobjtbl(L,T,objT,objV) /*+ live track of element count +*/ \
+	{ const TValue *oV=(objV); TValue *oT=(objT); Table *tbl = (T); \
+	  if(ttisnil(oT) && !ttisnil(oV)) \
+    	tbl->count = tbl->count +1; \
+	  else if(!ttisnil(oT) && ttisnil(oV)) { \
+    	tbl->count = tbl->count -1; \
+		if(tbl->count < 0) \
+		  luaG_runerror(L, "table count underrun"); \
+	  }\
+	  oT->value_ = oV->value_; oT->tt_=oV->tt_; \
+	  checkliveness(G(L),oT); \
+	} 
+	  
+
+
 /*
 ** different types of assignments, according to destination
 */
@@ -204,10 +233,12 @@ typedef struct lua_TValue {
 #define setsvalue2s	setsvalue
 #define sethvalue2s	sethvalue
 #define setptvalue2s	setptvalue
-/* from table to same table */
+/* from table to same table: no change of element count */
 #define setobjt2t	setobj
-/* to table */
-#define setobj2t	setobj
+/* to table: potential change of element count */
+#define setobj2t	setobjtbl /*+ live track of element count +*/
+/* to table: set key */
+#define setobjk2t	setobj
 /* to new object */
 #define setobj2n	setobj
 #define setsvalue2n	setsvalue
@@ -380,6 +411,7 @@ typedef struct Table {
   Node *lastfree;  /* any free position is before this position */
   GCObject *gclist;
   int sizearray;  /* size of `array' array */
+  int count; /*+ element count +*/
 } Table;
 
 

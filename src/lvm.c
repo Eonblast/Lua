@@ -132,10 +132,10 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
     const TValue *tm;
     if (ttistable(t)) {  /* `t' is a table? */
       Table *h = hvalue(t);
-      TValue *oldval = luaH_set(L, h, key); /* do a primitive set */
+      TValue *oldval = luaH_set(L, h, key); /* do a primitive set */ /*+get+*/
       if (!ttisnil(oldval) ||  /* result is not nil? */
           (tm = fasttm(L, h->metatable, TM_NEWINDEX)) == NULL) { /* or no TM? */
-        setobj2t(L, oldval, val);
+        setobj2t(L, h, oldval, val); /*+set+*/
         luaC_barrierback(L, obj2gco(h), val);
         return;
       }
@@ -331,6 +331,38 @@ void luaV_objlen (lua_State *L, StkId ra, const TValue *rb) {
 }
 
 
+void luaV_objcount (lua_State *L, StkId ra, const TValue *rb) {
+  const TValue *tm;
+  switch (ttype(rb)) {
+    case LUA_TTABLE: {
+    /*+ actual count of elements in table O(1) +*/
+      Table *h = hvalue(rb);
+      tm = fasttm(L, h->metatable, TM_COUNT);
+      if (tm) break;  /* metamethod? break switch to call it */
+      setnvalue(ra, cast_num(h->count));  /*+ real element count +*/
+      return;
+    }
+    /* UTF-8 estimate */
+    case LUA_TSTRING: {
+	  unsigned char *p = (unsigned char *)getstr(rawtsvalue(rb));
+	  unsigned char *q = p + tsvalue(rb)->len;
+	  size_t count = 0;
+	  while(p < q) { if(*p <= 127 || (*p >= 194 && *p <= 244)) count++; p++; }
+      setnvalue(ra, cast_num(count));  /*+ utf-8 length estimate +*/
+      return;
+    }
+    default: {  /* try metamethod */
+      tm = luaT_gettmbyobj(L, rb, TM_COUNT);
+      if (ttisnil(tm))  /* no metamethod? */
+        luaG_typeerror(L, rb, "get count of");
+      break;
+    }
+  }
+  callTM(L, tm, rb, luaO_nilobject, ra, 1);
+}
+
+
+
 void luaV_arith (lua_State *L, StkId ra, const TValue *rb,
                  const TValue *rc, TMS op) {
   TValue tempb, tempc;
@@ -400,7 +432,7 @@ void luaV_finishOp (lua_State *L) {
   OpCode op = GET_OPCODE(inst);
   switch (op) {  /* finish its execution */
     case OP_ADD: case OP_SUB: case OP_MUL: case OP_DIV:
-    case OP_MOD: case OP_POW: case OP_UNM: case OP_LEN:
+    case OP_MOD: case OP_POW: case OP_UNM: case OP_LEN: case OP_COUNT:
     case OP_GETTABUP: case OP_GETTABLE: case OP_SELF: {
       setobjs2s(L, base + GETARG_A(inst), --L->top);
       break;
@@ -600,6 +632,9 @@ void luaV_execute (lua_State *L) {
       vmcase(OP_LEN,
         Protect(luaV_objlen(L, ra, RB(i)));
       )
+      vmcase(OP_COUNT,
+        Protect(luaV_objcount(L, ra, RB(i)));
+      )
       vmcase(OP_CONCAT,
         int b = GETARG_B(i);
         int c = GETARG_C(i);
@@ -765,7 +800,7 @@ void luaV_execute (lua_State *L) {
           luaH_resizearray(L, h, last);  /* pre-allocate it at once */
         for (; n > 0; n--) {
           TValue *val = ra+n;
-          setobj2t(L, luaH_setint(L, h, last--), val);
+          setobj2t(L, h, luaH_setint(L, h, last--), val); /*+both+*/
           luaC_barrierback(L, obj2gco(h), val);
         }
         L->top = ci->top;  /* correct top (in case of previous open call) */

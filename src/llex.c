@@ -127,9 +127,9 @@ TString *luaX_newstring (LexState *ls, const char *str, size_t l) {
   TValue *o;  /* entry for `str' */
   TString *ts = luaS_newlstr(L, str, l);  /* create new string */
   setsvalue2s(L, L->top++, ts);  /* temporarily anchor it in stack */
-  o = luaH_setstr(L, ls->fs->h, ts); 
+  o = luaH_setstr(L, ls->fs->h, ts); /*+get+*/
   if (ttisnil(o)) {
-    setbvalue(o, 1);  /* t[string] = true */
+    setbvalue(o, 1);  /* t[string] = true */ /*+set+*/
     luaC_checkGC(L);
   }
   L->top--;  /* remove string from stack */

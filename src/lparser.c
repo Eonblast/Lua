@@ -847,6 +847,7 @@ static UnOpr getunopr (int op) {
     case TK_NOT: return OPR_NOT;
     case '-': return OPR_MINUS;
     case '#': return OPR_LEN;
+    case '%': return OPR_COUNT;
     default: return OPR_NOUNOPR;
   }
 }

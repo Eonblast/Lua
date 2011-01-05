@@ -312,7 +312,7 @@ void luaH_resize (lua_State *L, Table *t, int nasize, int nhsize) {
     /* re-insert elements from vanishing slice */
     for (i=nasize; i<oldasize; i++) {
       if (!ttisnil(&t->array[i]))
-        setobjt2t(L, luaH_setint(L, t, i+1), &t->array[i]);
+        setobjt2t(L, luaH_setint(L, t, i+1), &t->array[i]); /*+nochange+*/
     }
     /* shrink array */
     luaM_reallocvector(L, t->array, oldasize, nasize, TValue);
@@ -321,7 +321,7 @@ void luaH_resize (lua_State *L, Table *t, int nasize, int nhsize) {
   for (i = twoto(oldhsize) - 1; i >= 0; i--) {
     Node *old = nold+i;
     if (!ttisnil(gval(old)))
-      setobjt2t(L, luaH_set(L, t, gkey(old)), gval(old));
+      setobjt2t(L, luaH_set(L, t, gkey(old)), gval(old)); /*+nochange+*/
   }
   if (!isdummy(nold))
     luaM_freearray(L, nold, twoto(oldhsize));  /* free old array */
@@ -365,6 +365,7 @@ Table *luaH_new (lua_State *L) {
   t->flags = cast_byte(~0);
   t->array = NULL;
   t->sizearray = 0;
+  t->count = 0; /*+ element count +*/
   setnodevector(L, t, 0);
   return t;
 }
@@ -397,13 +398,14 @@ static Node *getfreepos (Table *t) {
 ** position), new key goes to an empty position.
 */
 static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
+
   Node *mp = mainposition(t, key);
   if (!ttisnil(gval(mp)) || isdummy(mp)) {  /* main position is taken? */
     Node *othern;
     Node *n = getfreepos(t);  /* get a free place */
     if (n == NULL) {  /* cannot find a free place? */
       rehash(L, t, key);  /* grow table */
-      return luaH_set(L, t, key);  /* re-insert key into grown table */
+      return luaH_set(L, t, key);  /* re-insert key into grown table */ /*+internal+*/
     }
     lua_assert(!isdummy(n));
     othern = mainposition(t, gkey(mp));
@@ -422,7 +424,7 @@ static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
       mp = n;
     }
   }
-  setobj2t(L, gkey(mp), key);
+  setobjk2t(L, gkey(mp), key); /*+ no change +*/
   luaC_barrierback(L, obj2gco(t), key);
   lua_assert(ttisnil(gval(mp)));
   return gval(mp);
@@ -495,12 +497,12 @@ TValue *luaH_set (lua_State *L, Table *t, const TValue *key) {
   const TValue *p = luaH_get(t, key);
   t->flags = 0;
   if (p != luaO_nilobject)
-    return cast(TValue *, p);
+    return cast(TValue *, p); 
   else {
     if (ttisnil(key)) luaG_runerror(L, "table index is nil");
     else if (ttisnumber(key) && luai_numisnan(L, nvalue(key)))
       luaG_runerror(L, "table index is NaN");
-    return newkey(L, t, key);
+    return newkey(L, t, key); 
   }
 }
 
@@ -512,7 +514,7 @@ TValue *luaH_setint (lua_State *L, Table *t, int key) {
   else {
     TValue k;
     setnvalue(&k, cast_num(key));
-    return newkey(L, t, &k);
+    return newkey(L, t, &k); 
   }
 }
 
