@@ -142,7 +142,7 @@ typedef struct lua_TValue {
 #define setnvalue(obj,x) \
   { TValue *i_o=(obj); i_o->value_.n=(x); i_o->tt_=LUA_TNUMBER; }
 
-/*+ set numeric value with live table element counr - used once in lcode.c +*/
+/*+ set numeric value with live table element counter - used once in lcode.c +*/
 #define setnvaluetbl(T,objT,x) \
 	{ TValue *oT=(objT); Table *tbl = (T); \
       if(ttisnil(oT)) tbl->count = tbl->count +1; \
