@@ -1,10 +1,10 @@
 
 function assert(t, a)
-	local b = #t
+	local b = %t
 	if a==b then
-		print("ok: #t=" .. a.. " " .. listed(t))
+		print("ok: len t=" .. a.. " " .. listed(t))
 	else
-		print("failed: #t= " .. b .. " not as expected: " .. a .. " " .. listed(t))
+		print("failed: len t= " .. b .. " not as expected: " .. a .. " " .. listed(t))
 	end
 end
 

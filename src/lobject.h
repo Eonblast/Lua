@@ -210,20 +210,12 @@ typedef struct lua_TValue {
 #define setobjtbl(L,T,objT,objV) /*+ live track of element count +*/ \
 	{ const TValue *oV=(objV); TValue *oT=(objT); Table *tbl = (T); \
 	  if(ttisnil(oT) && !ttisnil(oV)) \
-    	{ tbl->count = tbl->count +1; \
-    		if(ttisnumber(oV)) \
-    	     	printf("add %p N:%g to %d\n", tbl, nvalue(oV), tbl->count);  /* /// */  \
-    		if(ttisstring(oV)) \
-    	     	printf("add %p S:%s to %d\n", tbl, getstr(rawtsvalue(oV)), tbl->count);  /* /// */ } \
+    	tbl->count = tbl->count +1; \
 	  else if(!ttisnil(oT) && ttisnil(oV)) { \
     	tbl->count = tbl->count -1; \
 		if(tbl->count < 0) \
 		  luaG_runerror(L, "table count underrun"); \
 	  }\
- 		if(ttisnumber(oV)) \
-   	     	printf("set %p N:%g to %d\n", tbl, nvalue(oV), tbl->count);  /* /// */  \
-   		if(ttisstring(oV)) \
-   	     	printf("set %p S:%s to %d\n", tbl, getstr(rawtsvalue(oV)), tbl->count);  /* /// */  \
 	  oT->value_ = oV->value_; oT->tt_=oV->tt_; \
 	  checkliveness(G(L),oT); \
 	} 

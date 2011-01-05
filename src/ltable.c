@@ -268,8 +268,7 @@ static void setarrayvector (lua_State *L, Table *t, int size) {
   int i;
   luaM_reallocvector(L, t->array, t->sizearray, size, TValue);
   for (i=t->sizearray; i<size; i++)
-     { setnilvalue(&t->array[i]);
-     	printf("set nil %d\n", i);  } ///
+     setnilvalue(&t->array[i]);
   t->sizearray = size;
 }
 
@@ -402,11 +401,6 @@ static Node *getfreepos (Table *t) {
 */
 static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
 
-    		if(ttisnumber(key)) 
-    	     	printf("add %p new key (%d) %g\n", t, key->tt_, nvalue(key));  /* /// */  
-    		if(ttisstring(key)) 
-    	     	printf("add %p new key (%d) %s\n", t, key->tt_, getstr(rawtsvalue(key)));  /* /// */  
-
   Node *mp = mainposition(t, key);
   if (!ttisnil(gval(mp)) || isdummy(mp)) {  /* main position is taken? */
     Node *othern;
@@ -432,9 +426,7 @@ static TValue *newkey (lua_State *L, Table *t, const TValue *key) {
       mp = n;
     }
   }
-  printf("vvooo\n");
   setobjk2t(L, gkey(mp), key); /*+ no change +*/
-  printf("^^ooo\n");
   luaC_barrierback(L, obj2gco(t), key);
   lua_assert(ttisnil(gval(mp)));
   return gval(mp);

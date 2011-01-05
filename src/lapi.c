@@ -1089,6 +1089,15 @@ LUA_API void lua_len (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
+LUA_API void lua_count (lua_State *L, int idx) {
+  StkId t;
+  lua_lock(L);
+  t = index2addr(L, idx);
+  luaV_objcount(L, L->top, t);
+  api_incr_top(L);
+  lua_unlock(L);
+}
+
 
 LUA_API lua_Alloc lua_getallocf (lua_State *L, void **ud) {
   lua_Alloc f;

@@ -721,7 +721,7 @@ static void codearith (FuncState *fs, OpCode op,
   if (constfolding(op, e1, e2))
     return;
   else {
-    int o2 = (op != OP_UNM && op != OP_LEN) ? luaK_exp2RK(fs, e2) : 0;
+    int o2 = (op != OP_UNM && op != OP_LEN&& op != OP_COUNT) ? luaK_exp2RK(fs, e2) : 0;
     int o1 = luaK_exp2RK(fs, e1);
     if (o1 > o2) {
       freeexp(fs, e1);
@@ -771,6 +771,11 @@ void luaK_prefix (FuncState *fs, UnOpr op, expdesc *e, int line) {
     case OPR_LEN: {
       luaK_exp2anyreg(fs, e);  /* cannot operate on constants */
       codearith(fs, OP_LEN, e, &e2, line);
+      break;
+    }
+    case OPR_COUNT: {
+      luaK_exp2anyreg(fs, e);  /* cannot operate on constants */
+      codearith(fs, OP_COUNT, e, &e2, line);
       break;
     }
     default: lua_assert(0);
