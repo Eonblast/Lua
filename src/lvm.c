@@ -166,6 +166,7 @@ static int call_binTM (lua_State *L, const TValue *p1, const TValue *p2,
   return 1;
 }
 
+
 static const TValue *get_equalTM (lua_State *L, Table *mt1, Table *mt2,
                                   TMS event) {
   const TValue *tm1 = fasttm(L, mt1, event);
