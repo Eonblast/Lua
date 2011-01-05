@@ -17,7 +17,7 @@
 
 
 #define LUA_VERSION_MAJOR	"5"
-#define LUA_VERSION_MINOR	"2"
+#define LUA_VERSION_MINOR	"2x"
 #define LUA_VERSION_RELEASE	"0" " (alpha)"
 
 #define LUA_VERSION	"Lua " LUA_VERSION_MAJOR "." LUA_VERSION_MINOR
