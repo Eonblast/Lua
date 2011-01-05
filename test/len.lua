@@ -12,6 +12,7 @@ function listed(t)
   local i = 0
   local s = "( "
   for k,v in pairs(t) do
+  	if type(v)=='table' then v=listed(v) end 
   	s = s .. k .. ":" .. v .. " "
   end
   return s  .. ")"
@@ -315,4 +316,131 @@ t[1] = 'too'
 t[2] = 'bar'
 t[-1] = nil
 assert(t, 3)
+
+
+-- # # # # # # # # # # # # # # # # # # # # # # # # #
+
+t = {{3, 0}, {10, 24.3}, {27, 32.1}, {49, -45}; color="red"}
+assert(t, 5)
+
+t[1] = nil
+assert(t, 4)
+
+
+t[1] = nil
+assert(t, 4)
+
+
+t[2] = nil
+assert(t, 3)
+
+
+t[3] = nil
+assert(t, 2)
+
+t[4] = nil
+assert(t, 1)
+
+t[1] = nil
+assert(t, 1)
+
+t[2] = nil
+assert(t, 1)
+
+t['color'] = nil
+assert(t, 0)
+
+t[2] = nil
+assert(t, 0)
+
+
+
+-- # # # # # # # # # # # # # # # # # # # # # # # # #
+
+t = {{3, 0}, nil, {10, 24.3}, {27, 32.1}, {49, -45}; color="red"}
+assert(t, 5)
+
+t[1] = nil
+assert(t, 4)
+
+
+t[1] = nil
+assert(t, 4)
+
+
+t[2] = nil
+assert(t, 4)
+
+
+t[3] = nil
+assert(t, 3)
+
+t[4] = nil
+assert(t, 2)
+
+t[1] = nil
+assert(t, 2)
+
+t[2] = nil
+assert(t, 2)
+
+t['color'] = nil
+assert(t, 1)
+
+t[5] = nil
+assert(t, 0)
+
+
+-- # # # # # # # # # # # # # # # # # # # # # # # # #
+
+t = {{3, 0}, nil, {10, 24.3}, {27, 32.1}, {49, -45}, color="red", nil }
+assert(t, 5)
+
+t[8] = nil
+assert(t, 5)
+
+t[7] = nil
+assert(t, 5)
+
+t[2] = nil
+assert(t, 5)
+
+t[-1] = nil
+assert(t, 5)
+
+t[0] = nil
+assert(t, 5)
+
+t[-1] = nil
+assert(t, 5)
+
+t[1] = nil
+assert(t, 4)
+
+
+t[1] = nil
+assert(t, 4)
+
+
+t[2] = nil
+assert(t, 4)
+
+
+t[3] = nil
+assert(t, 3)
+
+t[4] = nil
+assert(t, 2)
+
+t[1] = nil
+assert(t, 2)
+
+t[2] = nil
+assert(t, 2)
+
+t['color'] = nil
+assert(t, 1)
+
+t[5] = nil
+assert(t, 0)
 
