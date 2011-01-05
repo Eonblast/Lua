@@ -145,7 +145,7 @@ typedef struct lua_TValue {
 /*+ set numeric value with live table element counter - used once in lcode.c +*/
 #define setnvaluetbl(T,objT,x) \
 	{ TValue *oT=(objT); Table *tbl = (T); \
-      if(ttisnil(oT)) tbl->count = tbl->count +1; \
+      if(ttisnil(oT)) tbl->count++; \
 	  oT->value_.n=(x); oT->tt_=LUA_TNUMBER; \
 	} /*+*/
 
@@ -163,7 +163,7 @@ typedef struct lua_TValue {
 /*+ set bool with live table element counr - used once in ldebug.c +*/
 #define setbvaluetbl(T,objT,x) /*+*/\
 	{ TValue *oT=(objT); Table *tbl = (T); /*+*/\
-      if(ttisnil(oT)) tbl->count = tbl->count +1; /*+*/\
+      if(ttisnil(oT)) tbl->count++; /*+*/\
 	  oT->value_.b=(x); oT->tt_=LUA_TBOOLEAN; /*+*/\
 	} /*+*/
 
@@ -210,9 +210,9 @@ typedef struct lua_TValue {
 #define setobjtbl(L,T,objT,objV) \
 	{ const TValue *oV=(objV); TValue *oT=(objT); Table *tbl = (T); \
 	  if(ttisnil(oT) && !ttisnil(oV)) \
-    	tbl->count = tbl->count +1; /*+!+*/\
+    	tbl->count++; /*+!+*/\
 	  else if(!ttisnil(oT) && ttisnil(oV)) { \
-    	tbl->count = tbl->count -1; /*+!+*/\
+    	tbl->count--; /*+!+*/\
 		if(tbl->count < 0) \
 		  luaG_runerror(L, "table count underrun"); \
 	  }\
