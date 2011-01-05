@@ -4,7 +4,7 @@ with a hack for true count of table and string sizes.
 as of 06 Jan 2011.
 
 THIS IS NOT A STANDARD LUA INSTALLATION. 
-Please go to http://lua.org for that.
+Please go to http://www.lua.org/download.html for that.
 
 For installation instructions, license details, and
 further information about Lua, see doc/readme.html.
@@ -28,7 +28,7 @@ might want to have a function.
 Basic direction:
 
 git clone git@github.com:Eonblast/Lua.git lua52
-cd Lua52
+cd lua52
 sudo make <your os> install
 src/lua test/len.lua
 src/lua test/strlen.lua
@@ -40,8 +40,7 @@ The count is updated with every table update and
 therefore takes no time when called.
 
 The diff to Lua 5.2.2.0 alpha can be seen here
-https://github.com/Eonblast/Lua/compare/master...Lua_5.2.2.0_alpha_original
-
+https://github.com/Eonblast/Lua/compare/Lua_5.2.2.0_alpha_original...master
 
 
 Contact:
