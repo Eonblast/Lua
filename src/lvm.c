@@ -98,7 +98,6 @@ static void callTM (lua_State *L, const TValue *f, const TValue *p1,
   }
 }
 
-
 void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
   int loop;
   for (loop = 0; loop < MAXTAGLOOP; loop++) {
@@ -124,7 +123,6 @@ void luaV_gettable (lua_State *L, const TValue *t, TValue *key, StkId val) {
   luaG_runerror(L, "loop in gettable");
 }
 
-
 void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
   int loop;
   TValue temp;
@@ -132,10 +130,10 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
     const TValue *tm;
     if (ttistable(t)) {  /* `t' is a table? */
       Table *h = hvalue(t);
-      TValue *oldval = luaH_set(L, h, key); /* do a primitive set */ /*+get+*/
+      TValue *oldval = luaH_set(L, h, key); /* do a primitive set */ /*+ get +*/
       if (!ttisnil(oldval) ||  /* result is not nil? */
           (tm = fasttm(L, h->metatable, TM_NEWINDEX)) == NULL) { /* or no TM? */
-        setobj2t(L, h, oldval, val); /*+set+*/
+        setobj2t(L, h, oldval, val); /*+ set +*/
         luaC_barrierback(L, obj2gco(h), val);
         return;
       }
@@ -154,7 +152,6 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
   luaG_runerror(L, "loop in settable");
 }
 
-
 static int call_binTM (lua_State *L, const TValue *p1, const TValue *p2,
                        StkId res, TMS event) {
   const TValue *tm = luaT_gettmbyobj(L, p1, event);  /* try first operand */
@@ -165,7 +162,6 @@ static int call_binTM (lua_State *L, const TValue *p1, const TValue *p2,
   callTM(L, tm, p1, p2, res, 1);
   return 1;
 }
-
 
 static const TValue *get_equalTM (lua_State *L, Table *mt1, Table *mt2,
                                   TMS event) {
@@ -312,7 +308,6 @@ void luaV_objlen (lua_State *L, StkId ra, const TValue *rb) {
     case LUA_TTABLE: {
       Table *h = hvalue(rb);
       tm = fasttm(L, h->metatable, TM_LEN);
-      if (tm) break;  /* metamethod? break switch to call it */
       setnvalue(ra, cast_num(luaH_getn(h)));  /* else primitive len */
       return;
     }
@@ -360,7 +355,6 @@ void luaV_objcount (lua_State *L, StkId ra, const TValue *rb) {
   }
   callTM(L, tm, rb, luaO_nilobject, ra, 1);
 }
-
 
 
 void luaV_arith (lua_State *L, StkId ra, const TValue *rb,
@@ -800,7 +794,7 @@ void luaV_execute (lua_State *L) {
           luaH_resizearray(L, h, last);  /* pre-allocate it at once */
         for (; n > 0; n--) {
           TValue *val = ra+n;
-          setobj2t(L, h, luaH_setint(L, h, last--), val); /*+both+*/
+          setobj2t(L, h, luaH_setint(L, h, last--), val); /*+ get & set+*/
           luaC_barrierback(L, obj2gco(h), val);
         }
         L->top = ci->top;  /* correct top (in case of previous open call) */

@@ -142,11 +142,11 @@ typedef struct lua_TValue {
 #define setnvalue(obj,x) \
   { TValue *i_o=(obj); i_o->value_.n=(x); i_o->tt_=LUA_TNUMBER; }
 
-/*+ used once in lcode.c +*/
-#define setnvaluetbl(T,objT,x) /*+*/\
-	{ TValue *oT=(objT); Table *tbl = (T); /*+*/\
-      if(ttisnil(oT)) tbl->count = tbl->count +1; /*+*/\
-	  oT->value_.n=(x); oT->tt_=LUA_TNUMBER; /*+*/\
+/*+ set numeric value with live table element counr - used once in lcode.c +*/
+#define setnvaluetbl(T,objT,x) \
+	{ TValue *oT=(objT); Table *tbl = (T); \
+      if(ttisnil(oT)) tbl->count = tbl->count +1; \
+	  oT->value_.n=(x); oT->tt_=LUA_TNUMBER; \
 	} /*+*/
 
 #define setfvalue(obj,x) \
@@ -160,7 +160,7 @@ typedef struct lua_TValue {
 #define setbvalue(obj,x) \
   { TValue *i_o=(obj); i_o->value_.b=(x); i_o->tt_=LUA_TBOOLEAN; }
 
-/*+ used once in ldebug.c +*/
+/*+ set bool with live table element counr - used once in ldebug.c +*/
 #define setbvaluetbl(T,objT,x) /*+*/\
 	{ TValue *oT=(objT); Table *tbl = (T); /*+*/\
       if(ttisnil(oT)) tbl->count = tbl->count +1; /*+*/\
@@ -206,13 +206,13 @@ typedef struct lua_TValue {
 	  o1->value_ = o2->value_; o1->tt_=o2->tt_; \
 	  checkliveness(G(L),o1); }
 
-
-#define setobjtbl(L,T,objT,objV) /*+ live track of element count +*/ \
+/*+ generic table set with live element count +*/
+#define setobjtbl(L,T,objT,objV) \
 	{ const TValue *oV=(objV); TValue *oT=(objT); Table *tbl = (T); \
 	  if(ttisnil(oT) && !ttisnil(oV)) \
-    	tbl->count = tbl->count +1; \
+    	tbl->count = tbl->count +1; /*+!+*/\
 	  else if(!ttisnil(oT) && ttisnil(oV)) { \
-    	tbl->count = tbl->count -1; \
+    	tbl->count = tbl->count -1; /*+!+*/\
 		if(tbl->count < 0) \
 		  luaG_runerror(L, "table count underrun"); \
 	  }\
@@ -235,8 +235,8 @@ typedef struct lua_TValue {
 #define setptvalue2s	setptvalue
 /* from table to same table: no change of element count */
 #define setobjt2t	setobj
-/* to table: potential change of element count */
-#define setobj2t	setobjtbl /*+ live track of element count +*/
+/*+ to table: potential change of element count +*/
+#define setobj2t	setobjtbl 
 /* to table: set key */
 #define setobjk2t	setobj
 /* to new object */

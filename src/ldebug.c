@@ -182,7 +182,7 @@ static void collectvalidlines (lua_State *L, Closure *f) {
     sethvalue(L, L->top, t);
     incr_top(L);
     for (i=0; i<f->l.p->sizelineinfo; i++)
-      setbvaluetbl(t, luaH_setint(L, t, lineinfo[i]), 1); /*+both+*/
+      setbvaluetbl(t, luaH_setint(L, t, lineinfo[i]), 1); /*+ get & set +*/
   }
 }
 
