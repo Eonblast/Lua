@@ -343,8 +343,6 @@ static void rehash (lua_State *L, Table *t, const TValue *ek) {
   nasize = numusearray(t, nums);  /* count keys in array part */
   totaluse = nasize;  /* all those keys are integer keys */
   totaluse += numusehash(t, nums, &nasize);  /* count keys in hash part */
-//  if(abs(totaluse - t->count) > 1) /*+ live control of element count +*/  
-//	  luaG_runerror(L, "corrupt element count %d where rehash found %d", t->count, totaluse); /*+*/
   /* count extra key */
   nasize += countint(ek, nums);
   totaluse++;
