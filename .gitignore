@@ -2,3 +2,4 @@
 *.log
 lua
 luac
+.DS_Store
