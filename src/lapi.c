@@ -735,7 +735,7 @@ LUA_API void lua_rawseti (lua_State *L, int idx, int n) {
   api_checknelems(L, 1);
   o = index2addr(L, idx);
   api_check(L, ttistable(o), "table expected");
-  setobj2t(L, hvalue(o), luaH_setint(L, hvalue(o), n), L->top-1); /*+both+*/
+  setobj2t(L, hvalue(o), luaH_setint(L, hvalue(o), n), L->top-1); /*+ get & set +*/
   luaC_barrierback(L, gcvalue(o), L->top-1);
   L->top--;
   lua_unlock(L);

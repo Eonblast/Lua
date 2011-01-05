@@ -9,6 +9,7 @@ Please go to http://www.lua.org/download.html for that.
 For installation instructions, license details, and
 further information about Lua, see doc/readme.html.
 
+There is chaos as two ASCII/UTF-8 format for files.
 
 Use:
 
