@@ -3,11 +3,47 @@ This is Lua 5.2 (alpha), released on 23 Nov 2010
 with a hack for true count of table and string sizes.
 as of 06 Jan 2011.
 
-THIS IS NOT A STANDARD LUA INSTALLATION. Please
-go to <lua.org> for that.
+THIS IS NOT A STANDARD LUA INSTALLATION. 
+Please go to http://lua.org for that.
 
 For installation instructions, license details, and
 further information about Lua, see doc/readme.html.
 
 
-Contact hd2010@eonblast.com
+Use:
+
+Use the % operator to retrieve the actual number of
+elemets in a table that are not 'nil'.
+
+t = {'foo', nil, 'bar'}
+print(%t)
+
+Or to get an estimate about how many printable 
+characters a UTF-8 string has.
+
+Compare this with #t. Of course, instead of '%' we
+might want to have a function.
+
+
+Basic direction:
+
+git clone git@github.com:Eonblast/Lua.git lua52
+cd Lua52
+sudo make <your os> install
+src/lua test/len.lua
+src/lua test/strlen.lua
+
+
+Implementation:
+
+The count is updated with every table update and
+therefore takes no time when called.
+
+The diff to Lua 5.2.2.0 alpha can be seen here
+https://github.com/Eonblast/Lua/compare/master...Lua_5.2.2.0_alpha_original
+
+
+
+Contact:
+
+hd2010@eonblast.com
