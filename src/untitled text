@@ -1,2 +1,0 @@
-t = { 'foo', nil, 'bar' }
-print(#t)

@@ -272,12 +272,12 @@ static void freeexp (FuncState *fs, expdesc *e) {
 
 static int addk (FuncState *fs, TValue *key, TValue *v) {
   lua_State *L = fs->L;
-  TValue *idx = luaH_set(L, fs->h, key); /*+get+*/
+  TValue *idx = luaH_set(L, fs->h, key);
   Proto *f = fs->f;
   int k, oldsize;
-  if (ttisnumber(idx)) {                
-    lua_Number n = nvalue(idx);          
-    lua_number2int(k, n);                
+  if (ttisnumber(idx)) {
+    lua_Number n = nvalue(idx);
+    lua_number2int(k, n);
     if (luaO_rawequalObj(&f->k[k], v))
       return k;
     /* else may be a collision (e.g., between 0.0 and "\0\0\0\0\0\0\0\0");
@@ -286,7 +286,7 @@ static int addk (FuncState *fs, TValue *key, TValue *v) {
   /* constant not found; create a new entry */
   oldsize = f->sizek;
   k = fs->nk;
-  setnvaluetbl(fs->h, idx, cast_num(k)); /*+set+*/
+  setnvalue(idx, cast_num(k));
   luaM_growvector(L, f->k, k, f->sizek, TValue, MAXARG_Ax, "constants");
   while (oldsize < f->sizek) setnilvalue(&f->k[oldsize++]);
   setobj(L, &f->k[k], v);
@@ -721,7 +721,7 @@ static void codearith (FuncState *fs, OpCode op,
   if (constfolding(op, e1, e2))
     return;
   else {
-    int o2 = (op != OP_UNM && op != OP_LEN&& op != OP_COUNT) ? luaK_exp2RK(fs, e2) : 0;
+    int o2 = (op != OP_UNM && op != OP_LEN) ? luaK_exp2RK(fs, e2) : 0;
     int o1 = luaK_exp2RK(fs, e1);
     if (o1 > o2) {
       freeexp(fs, e1);
@@ -771,11 +771,6 @@ void luaK_prefix (FuncState *fs, UnOpr op, expdesc *e, int line) {
     case OPR_LEN: {
       luaK_exp2anyreg(fs, e);  /* cannot operate on constants */
       codearith(fs, OP_LEN, e, &e2, line);
-      break;
-    }
-    case OPR_COUNT: {
-      luaK_exp2anyreg(fs, e);  /* cannot operate on constants */
-      codearith(fs, OP_COUNT, e, &e2, line);
       break;
     }
     default: lua_assert(0);

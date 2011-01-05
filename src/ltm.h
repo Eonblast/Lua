@@ -21,7 +21,6 @@ typedef enum {
   TM_GC,
   TM_MODE,
   TM_LEN,
-  TM_COUNT,
   TM_EQ,  /* last tag method with `fast' access */
   TM_ADD,
   TM_SUB,
